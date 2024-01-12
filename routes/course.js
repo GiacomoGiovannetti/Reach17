@@ -1,14 +1,32 @@
 const express = require("express");
 const router = express.Router();
+const Course = require("../model/course");
 
 router.post("/add", (req, res) => {
-  res.status(200).json({
-    succes: true,
-    body: req.body,
+  const course = new Course({
+    name: req.body.name,
+    typeID: req.body.typeID,
+    universityID: req.body.universityID,
   });
+  course
+    .save()
+    .then((result) => {
+      res.status(201).json({
+        message: "Item has been created successfully",
+        createdCourse: {
+          _id: result.id,
+          name: result.name,
+          typeID: result.typeID,
+          universityId: result.universityID,
+        },
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err });
+    });
 });
 
-router.put("/modify/:name", (req, res) => {
+router.patch("/modify/:name", (req, res) => {
   const { name } = req.params;
   res.status(200).json({
     success: true,
@@ -26,10 +44,18 @@ router.delete("/delete/:name", (req, res) => {
 });
 
 router.get("/all", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "mostra tutti i corsi",
-  });
+  Course.find()
+    //.select("_id name typeID universityID")
+    .then((result) => {
+      const response = {
+        count: result.length,
+        course: result,
+      };
+      res.status(200).json(response);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
 });
 
 router.get("/all/:name", (req, res) => {

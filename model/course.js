@@ -5,15 +5,20 @@ const courseSchema = new Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
-  type: {
-    type: String,
+  typeID: {
+    type: Schema.Types.ObjectId,
+    ref: "CourseType",
     required: true,
   },
-  university: {
-    type: [String], // [{ type: String }]
-    required: true,
-  },
+  universityID: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "University",
+      required: true,
+    },
+  ],
 });
 
 const Course = mongoose.model("Course", courseSchema);

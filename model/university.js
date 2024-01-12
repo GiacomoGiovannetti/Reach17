@@ -1,17 +1,16 @@
 const mongoose = require("mongoose");
-const { countDocuments } = require("./courseType");
 const Schema = mongoose.Schema;
 
 const universitySchema = new Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
-  course: {
-    // POTREBBE NON SERVIRE
-    type: [String],
-    required: true,
-  },
+  // course: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: "Course",
+  // },
 });
 
 const University = mongoose.model("University", universitySchema);
