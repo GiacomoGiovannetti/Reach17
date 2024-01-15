@@ -7,10 +7,6 @@ const universitySchema = new Schema({
     required: true,
     unique: true,
   },
-  // course: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: "Course",
-  // },
 });
 
 const University = mongoose.model("University", universitySchema);
