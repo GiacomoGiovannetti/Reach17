@@ -1,5 +1,5 @@
 const express = require("express");
-const startServer = require("./config/db");
+const { startServer } = require("./config/db");
 const courseTypeRouter = require("./routes/coursetype");
 const universitiesRouter = require("./routes/university");
 const courseRouter = require("./routes/course");

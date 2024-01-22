@@ -26,7 +26,6 @@ router.get("perUniversity/:universityId", getCoursePerUniversity);
 
 router.get("/perType/:typeId", getCoursePerType);
 
-// filter that returns all the course of the same type that take place in the same university
 router.get(
   "/perTypeAndUniversity/:typeId/:universityId",
   getAllCoursePerTypeAndUniversity

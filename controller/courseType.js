@@ -1,4 +1,4 @@
-const CourseType = require("../model/courseType");
+const CourseType = require("../model/coursetype");
 const { StatusCodes } = require("http-status-codes");
 
 //Function to create a new course type

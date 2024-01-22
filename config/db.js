@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const { MongoMemoryServer } = require("mongodb-memory-server");
 
 dotenv.config();
 
@@ -13,13 +14,39 @@ const envVars = {
 };
 
 const dbURI = `mongodb+srv://${envVars.user}:${envVars.password}@${envVars.cluster}.${envVars.dbName}/?retryWrites=true&w=majority`;
-
+let mockDb = null;
 //connection to database via URI
-mongoose.connect(dbURI);
+const dbConnection = async () => {
+  try {
+    //check if node is in test env, if it is, the server connects to a mockdb
+    if (process.env.NODE_ENV == "test") {
+      mockDb = await MongoMemoryServer.create();
+      const uri = mockDb.getUri();
+      mongoose.connect(uri);
+    } else {
+      mongoose.connect(dbURI);
+    }
+  } catch (error) {
+    console.error("Error during db connection :", error);
+  }
+};
 let db = mongoose.connection;
+
+//function to disconnect from db
+const dbDisconnection = async () => {
+  try {
+    await mongoose.connection.close();
+    if (mockDb) {
+      await mockDb.stop();
+    }
+  } catch (error) {
+    console.error("Error during db disconnection", error);
+  }
+};
 
 //function to start the server depending on the outcome of the connection to the db
 const startServer = (app) => {
+  dbConnection();
   db.once("connected", () => {
     app.listen(envVars.port, (req, res) => {
       console.log(
@@ -36,20 +63,4 @@ const startServer = (app) => {
   });
 };
 
-module.exports = startServer;
-
-// const startServer = async (app, port) => {
-//   try {
-//     const connectionResult = await db;
-//     connectionResult.once("connected", (event) => {
-//       app.listen(port, (req, res) => {
-//         console.log(`Il server è in ascolto a ${port}`);
-//       });
-//     });
-//     connectionResult.on("error", () => {
-//       throw new Error("The server is not listening");
-//     });
-//   } catch (err) {
-//     console.error("Error message : ", err);
-//   }
-// };
+module.exports = { startServer, dbDisconnection };

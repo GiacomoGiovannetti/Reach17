@@ -1,6 +1,5 @@
-const { StatusCodes, NOT_FOUND } = require("http-status-codes");
+const { StatusCodes } = require("http-status-codes");
 const Course = require("../model/course");
-const { findByIdAndDelete } = require("../model/courseType");
 
 //function to create a new course
 exports.createCourse = async (req, res) => {
