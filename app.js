@@ -1,5 +1,5 @@
 const express = require("express");
-const { startServer } = require("./config/db");
+// const { startServer } = require("./config/db");
 const courseTypeRouter = require("./routes/coursetype");
 const universitiesRouter = require("./routes/university");
 const courseRouter = require("./routes/course");
@@ -12,6 +12,6 @@ app.use("/api/coursetype", courseTypeRouter);
 app.use("/api/university", universitiesRouter);
 app.use("/api/course", courseRouter);
 
-startServer(app);
+//startServer(app);
 
 module.exports = app;

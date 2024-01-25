@@ -2,9 +2,9 @@
   "name": "reach17",
   "version": "1.0.0",
   "description": "API per catalogare i corsi forniti da reach17",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "nodemon server.js",
     "test": "set NODE_ENV=test&&jest --watchAll --verbose"
   },
   "author": "Giacomo Giovannetti",

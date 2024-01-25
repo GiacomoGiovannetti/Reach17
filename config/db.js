@@ -6,7 +6,6 @@ dotenv.config();
 
 //declaring in a shorted way env variables
 const envVars = {
-  port: process.env.PORT || 3000,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   cluster: process.env.DB_CLUSTER,
@@ -31,6 +30,7 @@ const dbConnection = async () => {
   }
 };
 let db = mongoose.connection;
+let server;
 
 //function to disconnect from db
 const dbDisconnection = async () => {
@@ -44,23 +44,12 @@ const dbDisconnection = async () => {
   }
 };
 
-//function to start the server depending on the outcome of the connection to the db
-const startServer = (app) => {
-  dbConnection();
-  db.once("connected", () => {
-    app.listen(envVars.port, (req, res) => {
-      console.log(
-        `Connection to db completed - Server is listening at ${envVars.port}`
-      );
-    });
-  });
+db.once("connected", () => {
+  console.log(`Connection to db completed : ${db.host}`);
+});
 
-  db.on("error", (err) => {
-    console.error(
-      "Failed to connected to db - Server is not listening : ",
-      err
-    );
-  });
-};
+db.on("error", (err) => {
+  console.error("Failed to connected to db - Server is not listening : ", err);
+});
 
-module.exports = { startServer, dbDisconnection };
+module.exports = { dbDisconnection, dbConnection, db };
