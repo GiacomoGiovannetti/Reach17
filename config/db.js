@@ -30,7 +30,6 @@ const dbConnection = async () => {
   }
 };
 let db = mongoose.connection;
-let server;
 
 //function to disconnect from db
 const dbDisconnection = async () => {
@@ -45,7 +44,7 @@ const dbDisconnection = async () => {
 };
 
 db.once("connected", () => {
-  console.log(`Connection to db completed : ${db.host}`);
+  console.log(`Connection to db completed`);
 });
 
 db.on("error", (err) => {

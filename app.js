@@ -12,6 +12,4 @@ app.use("/api/coursetype", courseTypeRouter);
 app.use("/api/university", universitiesRouter);
 app.use("/api/course", courseRouter);
 
-//startServer(app);
-
 module.exports = app;

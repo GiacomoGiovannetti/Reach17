@@ -22,12 +22,12 @@ router.get("/", getAllCourse);
 
 router.get("/:id", getCourse);
 
-router.get("perUniversity/:universityId", getCoursePerUniversity);
+router.get("/peruniversity/:universityId", getCoursePerUniversity);
 
-router.get("/perType/:typeId", getCoursePerType);
+router.get("/pertype/:typeId", getCoursePerType);
 
 router.get(
-  "/perTypeAndUniversity/:typeId/:universityId",
+  "/pertypeanduniversity/:typeId/:universityId",
   getAllCoursePerTypeAndUniversity
 );
 

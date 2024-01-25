@@ -9,6 +9,18 @@ exports.createDummyData = async (model) => {
   return testId;
 };
 
+exports.createDummyCourse = async (model, typeID, universityID) => {
+  const dummyCourse = new model({
+    name: "test course",
+    typeID: typeID,
+    universityID: universityID,
+  });
+
+  const response = await dummyCourse.save();
+  testCourseId = response._id.toHexString();
+  return testCourseId;
+};
+
 //function to modify the Id of the test resource to generate a not found error
 exports.replaceFirstCharId = (testId) => {
   try {

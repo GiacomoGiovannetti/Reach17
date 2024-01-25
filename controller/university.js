@@ -98,7 +98,7 @@ exports.getAllUniversities = async (req, res) => {
     } else {
       res.status(StatusCodes.OK).json({
         count: AllUniversities.length,
-        University: AllUniversities,
+        university: AllUniversities,
       });
     }
   } catch (error) {

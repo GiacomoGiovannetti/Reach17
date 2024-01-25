@@ -1,6 +1,6 @@
 const request = require("supertest");
 const app = require("../app");
-const { dbDisconnection, dbConnection, db } = require("../config/db");
+const { dbDisconnection, dbConnection } = require("../config/db");
 const CourseType = require("../model/coursetype");
 const { createDummyData, replaceFirstCharId } = require("./testmiddlewares");
 
@@ -9,10 +9,7 @@ let modifiedTestId = null;
 
 describe("courseType requests", () => {
   beforeAll(async () => {
-    if (!db.readyState === 1) {
-      dbConnection();
-      console.log("esegue connessione v2 da CourseType");
-    }
+    dbConnection();
     testId = await createDummyData(CourseType);
     modifiedTestId = replaceFirstCharId(testId);
   });
@@ -20,6 +17,7 @@ describe("courseType requests", () => {
   afterAll(() => {
     dbDisconnection();
   });
+
   describe("POST request", () => {
     afterAll(async () => {
       await CourseType.deleteOne({ name: "post test" });
@@ -27,7 +25,7 @@ describe("courseType requests", () => {
 
     describe("given a name", () => {
       it("should respond with a json obj which contains id and name and a status code of 201", async () => {
-        const response = await request(app).post("/api/coursetype").send({
+        const response = await request(app).post("/api/coursetype/").send({
           name: "post test",
         });
         expect(response.body.message).toBeDefined();
@@ -39,8 +37,10 @@ describe("courseType requests", () => {
     });
 
     describe("when the name is missing", () => {
-      it("should respond with a 500 status code", async () => {
-        const response = await request(app).post("/api/coursetype").send({});
+      it("should respond with a 500 status code and a json obj containing a message", async () => {
+        const response = await request(app).post("/api/coursetype/").send({});
+        expect(response.body.message).toBeDefined();
+        expect(response.headers["content-type"]).toContain("json");
         expect(response.statusCode).toBe(500);
       });
     });
@@ -76,10 +76,12 @@ describe("courseType requests", () => {
     });
 
     describe("given a valid Id but the name is missing in the request body", () => {
-      it("should respond with a status code of 500", async () => {
+      it("should respond with a status code of 500 and a json obj containing a message", async () => {
         const response = await request(app)
           .patch(`/api/coursetype/${testId}`)
           .send();
+        expect(response.body.message).toBeDefined();
+        expect(response.headers["content-type"]).toContain("json");
         expect(response.statusCode).toBe(500);
       });
     });
@@ -111,8 +113,10 @@ describe("courseType requests", () => {
 
   describe("Get all course types", () => {
     describe("if the course type collection is empty", () => {
-      it("should respond with a status code of 404", async () => {
+      it("should respond with a status code of 404 and a json obj containing a message", async () => {
         const response = await request(app).get("/api/coursetype/");
+        expect(response.body.message).toBeDefined();
+        expect(response.headers["content-type"]).toContain("json");
         expect(response.statusCode).toBe(404);
       });
     });
@@ -120,7 +124,7 @@ describe("courseType requests", () => {
       beforeAll(async () => {
         testId = await createDummyData(CourseType);
       });
-      it("should respond with a json object containing count e coursetype properties and a status code of 200", async () => {
+      it("should respond with a json object containing count and coursetype properties and a status code of 200", async () => {
         const response = await request(app).get(`/api/coursetype/`);
         expect(response.body.count).toBeDefined();
         expect(response.body.courseType).toBeDefined();
