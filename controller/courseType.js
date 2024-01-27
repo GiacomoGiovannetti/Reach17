@@ -1,11 +1,15 @@
 const CourseType = require("../model/coursetype");
 const { StatusCodes } = require("http-status-codes");
+const validator = require("validator");
 
 //Function to create a new course type
 exports.createCourseType = async (req, res) => {
   try {
     const { name } = req.body;
-    if (name) {
+    const nameIsValid = validator.isAlphanumeric(name, ["en-US"], {
+      ignore: " ",
+    });
+    if (name && nameIsValid) {
       const newCourseType = new CourseType({
         name: name,
       });
@@ -14,6 +18,8 @@ exports.createCourseType = async (req, res) => {
         message: "Course type created successfully",
         createdCourseType: { _id: courseType._id, name: courseType.name },
       });
+    } else if (!nameIsValid) {
+      throw new Error("name can only contain alpha numeric values");
     } else {
       throw new Error("name not provided");
     }
@@ -30,7 +36,10 @@ exports.modifyCourseType = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-    if (name) {
+    const nameIsValid = validator.isAlphanumeric(name, ["en-US"], {
+      ignore: " ",
+    });
+    if (name && nameIsValid) {
       const modifiedCourseType = await CourseType.findByIdAndUpdate(id, {
         $set: { name: req.body.name },
       });
@@ -47,6 +56,8 @@ exports.modifyCourseType = async (req, res) => {
           message: "No valid resource for specified ID",
         });
       }
+    } else if (!nameIsValid) {
+      throw new Error("New name can only contain alpha numeric values");
     } else {
       throw new Error("New name not provided");
     }

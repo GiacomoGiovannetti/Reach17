@@ -1,11 +1,15 @@
 const { StatusCodes } = require("http-status-codes");
 const Course = require("../model/course");
+const validator = require("validator");
 
 //function to create a new course
 exports.createCourse = async (req, res) => {
   try {
     const { name, typeID, universityID } = req.body;
-    if (name && typeID && universityID) {
+    const nameIsValid = validator.isAlphanumeric(name, ["en-US"], {
+      ignore: " ",
+    });
+    if (name && typeID && universityID && nameIsValid) {
       const newCourse = new Course({
         name: name,
         typeID: typeID,
@@ -21,6 +25,8 @@ exports.createCourse = async (req, res) => {
           universityID: course.universityID,
         },
       });
+    } else if (!nameIsValid) {
+      throw new Error("name can only contain alphanumeric values");
     } else {
       throw new Error("name or typeID or universityID not provided");
     }
@@ -37,7 +43,12 @@ exports.modifyCourse = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, typeID, universityID } = req.body;
-    if (name || typeID || universityID) {
+    const nameIsValid = name
+      ? validator.isAlphanumeric(name, ["en-US"], {
+          ignore: " ",
+        })
+      : false;
+    if ((name && nameIsValid) || typeID || universityID) {
       const modifiedCourse = await Course.findByIdAndUpdate(id, {
         $set: { name: name, typeID: typeID, universityID: universityID },
       });
@@ -56,6 +67,8 @@ exports.modifyCourse = async (req, res) => {
           message: "No valid resource for specified ID",
         });
       }
+    } else if (!nameIsValid) {
+      throw new Error("name can only contain alphanumeric values");
     } else {
       throw new Error("name or typeID or universityID not provided");
     }

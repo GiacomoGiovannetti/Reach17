@@ -42,6 +42,16 @@ describe("University requests", () => {
         expect(response.statusCode).toBe(500);
       });
     });
+    describe("name is not an alphanumeric value", () => {
+      it("should respond with a 500 status code and a json obj containing a message", async () => {
+        const response = await request(app)
+          .post("/api/university/")
+          .send({ name: "test$post" });
+        expect(response.body.message).toBeDefined();
+        expect(response.headers["content-type"]).toContain("json");
+        expect(response.statusCode).toBe(500);
+      });
+    });
   });
   describe("PATCH request", () => {
     describe("given a valid Id and a name", () => {
@@ -49,7 +59,7 @@ describe("University requests", () => {
         const response = await request(app)
           .patch(`/api/university/${testId}`)
           .send({
-            name: "test 2",
+            name: "test patch",
           });
         expect(response.body.message).toBeDefined();
         expect(response.body.modifiedUniversity._id).toBeDefined();
@@ -75,6 +85,19 @@ describe("University requests", () => {
         const response = await request(app)
           .patch(`/api/university/${testId}`)
           .send();
+        expect(response.body.message).toBeDefined();
+        expect(response.headers["content-type"]).toContain("json");
+        expect(response.statusCode).toBe(500);
+      });
+    });
+
+    describe("given a valid Id but the name is not an alphanumeric value", () => {
+      it("should respond with a 500 status code and a json obj containing a message", async () => {
+        const response = await request(app)
+          .patch(`/api/university/${testId}`)
+          .send({
+            name: "test£patch",
+          });
         expect(response.body.message).toBeDefined();
         expect(response.headers["content-type"]).toContain("json");
         expect(response.statusCode).toBe(500);

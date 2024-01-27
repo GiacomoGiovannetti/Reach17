@@ -28,17 +28,28 @@ describe("courseType requests", () => {
         const response = await request(app).post("/api/coursetype/").send({
           name: "post test",
         });
+        console.log(response.body);
+        expect(response.statusCode).toBe(201);
         expect(response.body.message).toBeDefined();
         expect(response.body.createdCourseType._id).toBeDefined();
         expect(response.body.createdCourseType.name).toBeDefined();
         expect(response.headers["content-type"]).toContain("json");
-        expect(response.statusCode).toBe(201);
       });
     });
 
     describe("when the name is missing", () => {
       it("should respond with a 500 status code and a json obj containing a message", async () => {
         const response = await request(app).post("/api/coursetype/").send({});
+        expect(response.body.message).toBeDefined();
+        expect(response.headers["content-type"]).toContain("json");
+        expect(response.statusCode).toBe(500);
+      });
+    });
+    describe("name is not an alphanumeric value", () => {
+      it("should send a 500 status code and a json obj with a message", async () => {
+        const response = await request(app).post("/api/coursetype/").send({
+          name: "test$post",
+        });
         expect(response.body.message).toBeDefined();
         expect(response.headers["content-type"]).toContain("json");
         expect(response.statusCode).toBe(500);
@@ -52,7 +63,7 @@ describe("courseType requests", () => {
         const response = await request(app)
           .patch(`/api/coursetype/${testId}`)
           .send({
-            name: "test",
+            name: "test 2",
           });
         expect(response.body.message).toBeDefined();
         expect(response.body.modifiedCourseType._id).toBeDefined();
@@ -80,6 +91,18 @@ describe("courseType requests", () => {
         const response = await request(app)
           .patch(`/api/coursetype/${testId}`)
           .send();
+        expect(response.body.message).toBeDefined();
+        expect(response.headers["content-type"]).toContain("json");
+        expect(response.statusCode).toBe(500);
+      });
+    });
+    describe("given a valid Id but the name is not an alphanumeric value", () => {
+      it("should respond with a 500 status code and a json obj containing a message", async () => {
+        const response = await request(app)
+          .patch(`/api/coursetype/${testId}`)
+          .send({
+            name: "test%patch",
+          });
         expect(response.body.message).toBeDefined();
         expect(response.headers["content-type"]).toContain("json");
         expect(response.statusCode).toBe(500);

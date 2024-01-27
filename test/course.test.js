@@ -36,12 +36,12 @@ describe("course requests", () => {
   });
   describe("POST requests", () => {
     afterAll(async () => {
-      await Course.deleteOne({ name: "test" });
+      await Course.deleteOne({ name: "test post" });
     });
     describe("given a name, typeId and universityIds", () => {
       it("should respond with a 201 status code and a json obj containing a message and the created obj", async () => {
         const response = await request(app).post("/api/course/").send({
-          name: "test",
+          name: "test post",
           typeID: courseTypeTestId,
           universityID: universityTestId,
         });
@@ -77,6 +77,18 @@ describe("course requests", () => {
           expect(response.headers["content-type"]).toContain("json");
           expect(response.statusCode).toBe(500);
         }
+      });
+    });
+    describe("name is not an alphanumeric value", () => {
+      it("should send a 500 status code and a json obj containing a message", async () => {
+        const response = await request(app).post("/api/course/").send({
+          name: "test@post",
+          typeID: courseTypeTestId,
+          universityID: universityTestId,
+        });
+        expect(response.body.message).toBeDefined();
+        expect(response.headers["content-type"]).toContain("json");
+        expect(response.statusCode).toBe(500);
       });
     });
   });
@@ -133,6 +145,18 @@ describe("course requests", () => {
         const response = await request(app)
           .patch(`/api/course/${courseTestId}`)
           .send();
+        expect(response.body.message).toBeDefined();
+        expect(response.headers["content-type"]).toContain("json");
+        expect(response.statusCode).toBe(500);
+      });
+    });
+    describe("given an Id but the name in the request body is not an alphanumeric value", () => {
+      it("should send a 500 status code and a json obj containing a message", async () => {
+        const response = await request(app)
+          .patch(`/api/course/${courseTestId}`)
+          .send({
+            name: "test$patch",
+          });
         expect(response.body.message).toBeDefined();
         expect(response.headers["content-type"]).toContain("json");
         expect(response.statusCode).toBe(500);

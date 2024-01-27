@@ -1,11 +1,15 @@
 const { StatusCodes } = require("http-status-codes");
 const University = require("../model/university");
+const validator = require("validator");
 
 //Function to create a new University
 exports.createUniversity = async (req, res) => {
   try {
     const { name } = req.body;
-    if (name) {
+    const nameIsValid = validator.isAlphanumeric(name, ["en-US"], {
+      ignore: " ",
+    });
+    if (name && nameIsValid) {
       const newUniversity = new University({
         name: name,
       });
@@ -17,6 +21,8 @@ exports.createUniversity = async (req, res) => {
           name: university.name,
         },
       });
+    } else if (!nameIsValid) {
+      throw new Error("name can only contain alphanumeric values");
     } else {
       throw new Error("Name not provided");
     }
@@ -33,7 +39,10 @@ exports.modifyUniversity = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-    if (name) {
+    const nameIsValid = validator.isAlphanumeric(name, ["en-US"], {
+      ignore: " ",
+    });
+    if (name && nameIsValid) {
       const modifiedUniversity = await University.findByIdAndUpdate(id, {
         $set: { name: name },
       });
@@ -50,6 +59,8 @@ exports.modifyUniversity = async (req, res) => {
           message: "No valid resource for specified ID",
         });
       }
+    } else if (!nameIsValid) {
+      throw new Error("New name can only contain alphanumeric values");
     } else {
       throw new Error("New name not provided");
     }
