@@ -43,17 +43,15 @@ git clone https://github.com/GiacomoGiovannetti/Reach17.git
 ```
 
 ### 2 -  Install the dependencies 
+
 ```
 npm install
 ```
 
 ### 3 - Start the server
+
 ```
 npm start
-```
-or run it in development mode:
-```
-npm run dev
 ```
 
 ### 4 - Connect to your MongoDB 
