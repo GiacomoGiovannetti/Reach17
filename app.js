@@ -1,11 +1,11 @@
-const express = require("express");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const mongoSanitize = require("express-mongo-sanitize");
+const express = require('express');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const mongoSanitize = require('express-mongo-sanitize');
 
-const courseTypeRouter = require("./routes/coursetype");
-const universitiesRouter = require("./routes/university");
-const courseRouter = require("./routes/course");
+const courseTypeRouter = require('./routes/courseType');
+const universitiesRouter = require('./routes/university');
+const courseRouter = require('./routes/course');
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //request logger
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 
 //security http headers
 app.use(helmet());
@@ -23,8 +23,8 @@ app.use(helmet());
 app.use(mongoSanitize());
 
 //routes
-app.use("/api/coursetype", courseTypeRouter);
-app.use("/api/university", universitiesRouter);
-app.use("/api/course", courseRouter);
+app.use('/api/coursetype', courseTypeRouter);
+app.use('/api/university', universitiesRouter);
+app.use('/api/course', courseRouter);
 
 module.exports = app;
