@@ -93,6 +93,11 @@ localhost:8081/desiredEndpoint
 | DELETE | /api/course/:id | delete a course |
 | GET | /api/course/ | get all courses |
 | GET | /api/course/:id | get a single course |
+
+### Queries
+
+| Method | Endpoint | Result |
+| ------ | -------- | ------ |
 | GET | /api/course/pertype/:typeId | get all courses of a type |
 | GET | /api/course/peruniversity/:universityId | get all courses of a university |
 | GET | /api/course/pertypeanduniversity/:typeId/:universityId | get all courses of a type in a university |
