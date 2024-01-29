@@ -27,4 +27,8 @@ app.use('/api/coursetype', courseTypeRouter);
 app.use('/api/university', universitiesRouter);
 app.use('/api/course', courseRouter);
 
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Welcome to Reach17 ' });
+});
+
 module.exports = app;
