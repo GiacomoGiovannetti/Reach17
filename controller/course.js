@@ -1,13 +1,13 @@
-const { StatusCodes } = require("http-status-codes");
-const Course = require("../model/course");
-const validator = require("validator");
+const { StatusCodes } = require('http-status-codes');
+const Course = require('../model/course');
+const validator = require('validator');
 
 //function to create a new course
 exports.createCourse = async (req, res) => {
   try {
     const { name, typeID, universityID } = req.body;
-    const nameIsValid = validator.isAlphanumeric(name, ["en-US"], {
-      ignore: " ",
+    const nameIsValid = validator.isAlphanumeric(name, ['en-US'], {
+      ignore: ' ',
     });
     if (name && typeID && universityID && nameIsValid) {
       const newCourse = new Course({
@@ -17,7 +17,7 @@ exports.createCourse = async (req, res) => {
       });
       const course = await newCourse.save();
       res.status(StatusCodes.CREATED).json({
-        message: "Course has been created successfully",
+        message: 'Course has been created successfully',
         createdCourse: {
           _id: course._id,
           name: course.name,
@@ -26,14 +26,14 @@ exports.createCourse = async (req, res) => {
         },
       });
     } else if (!nameIsValid) {
-      throw new Error("name can only contain alphanumeric values");
+      throw new Error('name can only contain alphanumeric values');
     } else {
-      throw new Error("name or typeID or universityID not provided");
+      throw new Error('name or typeID or universityID not provided');
     }
   } catch (error) {
     console.error(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: "Course has not been created",
+      message: 'Course has not been created',
     });
   }
 };
@@ -44,8 +44,8 @@ exports.modifyCourse = async (req, res) => {
     const { id } = req.params;
     const { name, typeID, universityID } = req.body;
     const nameIsValid = name
-      ? validator.isAlphanumeric(name, ["en-US"], {
-          ignore: " ",
+      ? validator.isAlphanumeric(name, ['en-US'], {
+          ignore: ' ',
         })
       : false;
     if ((name && nameIsValid) || typeID || universityID) {
@@ -54,7 +54,7 @@ exports.modifyCourse = async (req, res) => {
       });
       if (modifiedCourse) {
         res.status(StatusCodes.OK).json({
-          message: "Course has been modified successfully",
+          message: 'Course has been modified successfully',
           modifiedCourse: {
             _id: modifiedCourse._id,
             name: modifiedCourse.name,
@@ -64,18 +64,18 @@ exports.modifyCourse = async (req, res) => {
         });
       } else {
         res.status(StatusCodes.NOT_FOUND).json({
-          message: "No valid resource for specified ID",
+          message: 'No valid resource for specified ID',
         });
       }
     } else if (!nameIsValid) {
-      throw new Error("name can only contain alphanumeric values");
+      throw new Error('name can only contain alphanumeric values');
     } else {
-      throw new Error("name or typeID or universityID not provided");
+      throw new Error('name or typeID or universityID not provided');
     }
   } catch (error) {
     console.error(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: "Course has not been modified",
+      message: 'Course has not been modified',
     });
   }
 };
@@ -87,7 +87,7 @@ exports.deleteCourse = async (req, res) => {
     const deletedCourse = await Course.findByIdAndDelete(id);
     if (deletedCourse) {
       res.status(StatusCodes.OK).json({
-        message: "Course has been deleted successfully",
+        message: 'Course has been deleted successfully',
         deletedCourse: {
           _id: deletedCourse._id,
           name: deletedCourse.name,
@@ -97,37 +97,14 @@ exports.deleteCourse = async (req, res) => {
       });
     } else {
       res.status(StatusCodes.NOT_FOUND).json({
-        message: "No valid resource for specified ID",
+        message: 'No valid resource for specified ID',
       });
     }
   } catch (error) {
     console.error(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: "Course has not been deleted",
+      message: 'Course has not been deleted',
     });
-  }
-};
-
-//function to get all courses
-exports.getAllCourse = async (req, res) => {
-  try {
-    const allCourses = await Course.find()
-      .select("_id name typeID universityID")
-      .populate("typeID", " _id name")
-      .populate("universityID", "_id name");
-    if (allCourses.length <= 0) {
-      res.status(StatusCodes.NOT_FOUND).json({
-        message: "No valid resource found",
-      });
-    } else {
-      res.status(StatusCodes.OK).json({
-        count: allCourses.length,
-        course: allCourses,
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -136,14 +113,14 @@ exports.getCourse = async (req, res) => {
   try {
     const { id } = req.params;
     const course = await Course.findById(id)
-      .select("_id name typeID universityID")
-      .populate("typeID", "_id name")
-      .populate("universityID", "_id name");
+      .select('_id name typeID universityID')
+      .populate('typeID', '_id name')
+      .populate('universityID', '_id name');
     if (course) {
       res.status(StatusCodes.OK).json({ course });
     } else {
       res.status(StatusCodes.NOT_FOUND).json({
-        message: "No valid resource for specified ID",
+        message: 'No valid resource for specified ID',
       });
     }
   } catch (error) {
@@ -152,69 +129,49 @@ exports.getCourse = async (req, res) => {
   }
 };
 
-//function to get a filtered list of all the course of a specified university
-exports.getCoursePerUniversity = async (req, res) => {
+//function to get all courses or filtered courses depending on query string
+exports.getCourses = async (req, res) => {
   try {
-    const { universityId } = req.params;
-    let courses = await Course.find({ universityID: { $in: universityId } })
-      .select("_id name typeID")
-      .populate("typeID", "name");
-    if (courses.length <= 0) {
-      res.status(StatusCodes.NOT_FOUND).json({
-        message: "No valid resource for specified ID",
-      });
-    } else {
-      res.status(StatusCodes.OK).json({
-        count: courses.length,
-        course: courses,
-      });
+    const { typeId, univId } = req.query;
+    checkResponseLength = (message, courses) => {
+      if (courses.length <= 0) {
+        res.status(StatusCodes.NOT_FOUND).json({
+          message: message,
+        });
+      } else {
+        res.status(StatusCodes.OK).json({
+          count: courses.length,
+          course: courses,
+        });
+      }
+    };
+    //checks if typeId and universityId are specified in the query string, in that case gets all the course with the specified type and university
+    if (typeId && univId) {
+      const courses = await Course.find({
+        typeID: typeId,
+        universityID: { $in: univId },
+      }).select('_id name');
+      checkResponseLength('No valid resource for specified IDs', courses);
     }
-  } catch (error) {
-    console.error(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR);
-  }
-};
-
-//function to get a filtered list of all the course of a specified type
-exports.getCoursePerType = async (req, res) => {
-  try {
-    const { typeId } = req.params;
-    const courses = await Course.find({ typeID: { $in: typeId } })
-      .select("_id, name")
-      .populate("universityID", "_id name");
-    if (courses.length <= 0) {
-      res.status(StatusCodes.NOT_FOUND).json({
-        message: "No valid resource for specified ID",
-      });
-    } else {
-      res.status(StatusCodes.OK).json({
-        count: courses.length,
-        course: courses,
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR);
-  }
-};
-
-//function to get a filtered list of all the courses of a specified type and a specified university
-exports.getAllCoursePerTypeAndUniversity = async (req, res) => {
-  try {
-    const { typeId, universityId } = req.params;
-    const courses = await Course.find({
-      typeID: typeId,
-      universityID: { $in: universityId },
-    }).select("_id name");
-    if (courses.length <= 0) {
-      res.status(StatusCodes.NOT_FOUND).json({
-        message: "No valid resource for specified IDs",
-      });
-    } else {
-      res.status(StatusCodes.OK).json({
-        count: courses.length,
-        course: courses,
-      });
+    //checks if universityId is specified in the query string, in that case gets all the courses of the specified university
+    else if (univId) {
+      let courses = await Course.find({ universityID: { $in: univId } })
+        .select('_id name typeID')
+        .populate('typeID', 'name');
+      checkResponseLength('No valid resource for specified ID', courses);
+    } //checks if typeId is specified in the query string, in that case gets all courses of the specified type
+    else if (typeId) {
+      let courses = await Course.find({ typeID: { $in: typeId } })
+        .select('_id name universityID')
+        .populate('universityID', 'name');
+      checkResponseLength('No valid resource for specified ID', courses);
+    } //if there is no query string the api requests all the courses
+    else {
+      const allCourses = await Course.find()
+        .select('_id name typeID universityID')
+        .populate('typeID', ' _id name')
+        .populate('universityID', '_id name');
+      checkResponseLength('No valid resource found', allCourses);
     }
   } catch (error) {
     console.error(error);

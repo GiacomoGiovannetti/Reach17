@@ -23,9 +23,9 @@ app.use(helmet());
 app.use(mongoSanitize());
 
 //routes
-app.use('/api/coursetype', courseTypeRouter);
-app.use('/api/university', universitiesRouter);
-app.use('/api/course', courseRouter);
+app.use('/api/courseTypes', courseTypeRouter);
+app.use('/api/universities', universitiesRouter);
+app.use('/api/courses', courseRouter);
 
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Welcome to Reach17 ' });
