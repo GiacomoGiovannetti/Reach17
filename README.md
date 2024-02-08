@@ -68,39 +68,39 @@ localhost:8081/desiredEndpoint
 
 | Method | Endpoint | Result |
 | ------ | -------- | ------ |
-| POST| /api/coursetype/ | create a new course type | 
-| PATCH | /api/coursetype/:id | modify a course type |
-| DELETE | /api/coursetype/:id | delete a course type |
-| GET | /api/coursetype/ | get all course types |
-| GET | /api/coursetype/:id | get a single course type |
+| POST| /api/courseTypes/ | create a new course type | 
+| PATCH | /api/courseTypes/:id | modify a course type |
+| DELETE | /api/courseTypes/:id | delete a course type |
+| GET | /api/courseTypes/ | get all course types |
+| GET | /api/courseTypes/:id | get a single course type |
 
 ### University
 
 | Method | Endpoint | Result |
 | ------ | -------- | ------ |
-| POST| /api/university/ | create a new university | 
-| PATCH | /api/university/:id | modify a university |
-| DELETE | /api/university/:id | delete a university |
-| GET | /api/university/ | get all universities |
-| GET | /api/university/:id | get a single university |
+| POST| /api/universities/ | create a new university | 
+| PATCH | /api/universities/:id | modify a university |
+| DELETE | /api/universities/:id | delete a university |
+| GET | /api/universities/ | get all universities |
+| GET | /api/universities/:id | get a single university |
 
 ### Course
 
 | Method | Endpoint | Result |
 | ------ | -------- | ------ |
-| POST| /api/course/ | create a new course | 
-| PATCH | /api/course/:id | modify a course |
-| DELETE | /api/course/:id | delete a course |
-| GET | /api/course/ | get all courses |
-| GET | /api/course/:id | get a single course |
+| POST| /api/courses/ | create a new course | 
+| PATCH | /api/courses/:id | modify a course |
+| DELETE | /api/courses/:id | delete a course |
+| GET | /api/courses/ | get all courses |
+| GET | /api/courses/:id | get a single course |
 
 ### Queries
 
 | Method | Endpoint | Result |
 | ------ | -------- | ------ |
-| GET | /api/course/pertype/:typeId | get all courses of a type |
-| GET | /api/course/peruniversity/:universityId | get all courses of a university |
-| GET | /api/course/pertypeanduniversity/:typeId/:universityId | get all courses of a type in a university |
+| GET | /api/courses?typeId=example123 | get all courses of a type |
+| GET | /api/courses?univId=example123 | get all courses of a university |
+| GET | /api/courses?typeId=example123&univId=example123 | get all courses of a type in a university |
 
 ## :books: Libraries
 - [Express.Js](https://expressjs.com/)
