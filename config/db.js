@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const { MongoMemoryServer } = require("mongodb-memory-server");
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const { MongoMemoryServer } = require('mongodb-memory-server');
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ let mockDb = null;
 const dbConnection = async () => {
   try {
     //check if node is in test env, if it is, the server connects to a mockdb
-    if (process.env.NODE_ENV == "test") {
+    if (process.env.NODE_ENV == 'test') {
       mockDb = await MongoMemoryServer.create();
       const uri = mockDb.getUri();
       mongoose.connect(uri);
@@ -26,7 +26,7 @@ const dbConnection = async () => {
       mongoose.connect(dbURI);
     }
   } catch (error) {
-    console.error("Error during db connection :", error);
+    console.error('Error during db connection :', error);
   }
 };
 let db = mongoose.connection;
@@ -39,16 +39,16 @@ const dbDisconnection = async () => {
       await mockDb.stop();
     }
   } catch (error) {
-    console.error("Error during db disconnection", error);
+    console.error('Error during db disconnection', error);
   }
 };
 
-db.once("connected", () => {
+db.once('connected', () => {
   console.log(`Connection to db completed`);
 });
 
-db.on("error", (err) => {
-  console.error("Failed to connected to db - Server is not listening : ", err);
+db.on('error', (err) => {
+  console.error('Failed to connected to db - Server is not listening : ', err);
 });
 
 module.exports = { dbDisconnection, dbConnection, db };
