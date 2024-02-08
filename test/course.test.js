@@ -1,14 +1,14 @@
-const request = require("supertest");
-const app = require("../app");
-const Course = require("../model/course");
-const { dbConnection, dbDisconnection } = require("../config/db");
+const request = require('supertest');
+const app = require('../app');
+const Course = require('../model/course');
+const { dbConnection, dbDisconnection } = require('../config/db');
 const {
   createDummyData,
   replaceFirstCharId,
   createDummyCourse,
-} = require("./testmiddlewares");
-const CourseType = require("../model/coursetype");
-const University = require("../model/university");
+} = require('./testmiddlewares');
+const CourseType = require('../model/coursetype');
+const University = require('../model/university');
 
 let courseTestId = null;
 let courseTypeTestId = null;
@@ -17,7 +17,7 @@ let modifiedCourseTestId = null;
 let modifiedCourseTypeTestId = null;
 let modifiedUniversityTestId = null;
 
-describe("course requests", () => {
+describe('course requests', () => {
   beforeAll(async () => {
     dbConnection();
     courseTypeTestId = await createDummyData(CourseType);
@@ -34,14 +34,14 @@ describe("course requests", () => {
   afterAll(() => {
     dbDisconnection();
   });
-  describe("POST requests", () => {
+  describe('POST requests', () => {
     afterAll(async () => {
-      await Course.deleteOne({ name: "test post" });
+      await Course.deleteOne({ name: 'test post' });
     });
-    describe("given a name, typeId and universityIds", () => {
-      it("should respond with a 201 status code and a json obj containing a message and the created obj", async () => {
-        const response = await request(app).post("/api/course/").send({
-          name: "test post",
+    describe('given a name, typeId and universityIds', () => {
+      it('should respond with a 201 status code and a json obj containing a message and the created obj', async () => {
+        const response = await request(app).post('/api/courses/').send({
+          name: 'test post',
           typeID: courseTypeTestId,
           universityID: universityTestId,
         });
@@ -50,156 +50,156 @@ describe("course requests", () => {
         expect(response.body.createdCourse.name).toBeDefined();
         expect(response.body.createdCourse.typeID).toBeDefined();
         expect(response.body.createdCourse.universityID).toBeDefined();
-        expect(response.headers["content-type"]).toContain("json");
+        expect(response.headers['content-type']).toContain('json');
         expect(response.statusCode).toBe(201);
       });
     });
-    describe("if name or typeID or universityID are missing", () => {
-      it("should send a 500 status code and a json object containing a message", async () => {
+    describe('if name or typeID or universityID are missing', () => {
+      it('should send a 500 status code and a json object containing a message', async () => {
         const bodyRequests = [
-          { name: "test with only name" },
+          { name: 'test with only name' },
           { typeID: courseTypeTestId },
           { universityID: universityTestId },
           {
-            name: "test with name and typeID",
+            name: 'test with name and typeID',
             typeID: courseTypeTestId,
           },
           {
-            name: "test with name and UniversityID",
+            name: 'test with name and UniversityID',
             universityID: [universityTestId],
           },
           { typeID: courseTypeTestId, universityID: [universityTestId] },
           {},
         ];
         for (let body of bodyRequests) {
-          const response = await request(app).post("/api/course/").send(body);
+          const response = await request(app).post('/api/courses/').send(body);
           expect(response.body.message).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(500);
         }
       });
     });
-    describe("name is not an alphanumeric value", () => {
-      it("should send a 500 status code and a json obj containing a message", async () => {
-        const response = await request(app).post("/api/course/").send({
-          name: "test@post",
+    describe('name is not an alphanumeric value', () => {
+      it('should send a 500 status code and a json obj containing a message', async () => {
+        const response = await request(app).post('/api/courses/').send({
+          name: 'test@post',
           typeID: courseTypeTestId,
           universityID: universityTestId,
         });
         expect(response.body.message).toBeDefined();
-        expect(response.headers["content-type"]).toContain("json");
+        expect(response.headers['content-type']).toContain('json');
         expect(response.statusCode).toBe(500);
       });
     });
   });
-  describe("PATCH requests", () => {
-    describe("if at least one of name, typeID and universityID is specified in the body", () => {
-      it("should respond with a status code pf 200 and send a json obj with a message and the modified obj", async () => {
+  describe('PATCH requests', () => {
+    describe('if at least one of name, typeID and universityID is specified in the body', () => {
+      it('should respond with a status code pf 200 and send a json obj with a message and the modified obj', async () => {
         const bodyRequests = [
-          { name: "test with only name" },
+          { name: 'test with only name' },
           { typeID: courseTypeTestId },
           { universityID: universityTestId },
           {
-            name: "test with name and typeID",
+            name: 'test with name and typeID',
             typeID: courseTypeTestId,
           },
           {
-            name: "test with name and UniversityID",
+            name: 'test with name and UniversityID',
             universityID: [universityTestId],
           },
           { typeID: courseTypeTestId, universityID: [universityTestId] },
           {
-            name: "test with all keys",
+            name: 'test with all keys',
             typeID: courseTypeTestId,
             universityID: universityTestId,
           },
         ];
         for (let body of bodyRequests) {
           const response = await request(app)
-            .patch(`/api/course/${courseTestId}`)
+            .patch(`/api/courses/${courseTestId}`)
             .send(body);
           expect(response.body.message).toBeDefined();
           expect(response.body.modifiedCourse._id).toBeDefined();
           expect(response.body.modifiedCourse.name).toBeDefined();
           expect(response.body.modifiedCourse.typeID).toBeDefined();
           expect(response.body.modifiedCourse.universityID).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(200);
         }
       });
     });
-    describe("given an Id with no valid resource related", () => {
-      it("should send back a message with a 404 status code and a json obj containing a message", async () => {
+    describe('given an Id with no valid resource related', () => {
+      it('should send back a message with a 404 status code and a json obj containing a message', async () => {
         const response = await request(app)
-          .patch(`/api/course/${modifiedCourseTestId}`)
+          .patch(`/api/courses/${modifiedCourseTestId}`)
           .send({
-            name: "patch test 2",
+            name: 'patch test 2',
           });
         expect(response.body.message).toBeDefined();
-        expect(response.headers["content-type"]).toContain("json");
+        expect(response.headers['content-type']).toContain('json');
         expect(response.statusCode).toBe(404);
       });
     });
-    describe("given a valid Id but the request body is empty", () => {
-      it("should respond with a 500 status code and a json obj containing a message", async () => {
+    describe('given a valid Id but the request body is empty', () => {
+      it('should respond with a 500 status code and a json obj containing a message', async () => {
         const response = await request(app)
-          .patch(`/api/course/${courseTestId}`)
+          .patch(`/api/courses/${courseTestId}`)
           .send();
         expect(response.body.message).toBeDefined();
-        expect(response.headers["content-type"]).toContain("json");
+        expect(response.headers['content-type']).toContain('json');
         expect(response.statusCode).toBe(500);
       });
     });
-    describe("given an Id but the name in the request body is not an alphanumeric value", () => {
-      it("should send a 500 status code and a json obj containing a message", async () => {
+    describe('given an Id but the name in the request body is not an alphanumeric value', () => {
+      it('should send a 500 status code and a json obj containing a message', async () => {
         const response = await request(app)
-          .patch(`/api/course/${courseTestId}`)
+          .patch(`/api/courses/${courseTestId}`)
           .send({
-            name: "test$patch",
+            name: 'test$patch',
           });
         expect(response.body.message).toBeDefined();
-        expect(response.headers["content-type"]).toContain("json");
+        expect(response.headers['content-type']).toContain('json');
         expect(response.statusCode).toBe(500);
       });
     });
   });
-  describe("DELETE requests", () => {
-    describe("given a valid Id", () => {
-      it("should respond with a 200 status code and a json obj containing the deleted obj", async () => {
+  describe('DELETE requests', () => {
+    describe('given a valid Id', () => {
+      it('should respond with a 200 status code and a json obj containing the deleted obj', async () => {
         const response = await request(app)
-          .delete(`/api/course/${courseTestId}`)
+          .delete(`/api/courses/${courseTestId}`)
           .send();
         expect(response.body.message).toBeDefined();
         expect(response.body.deletedCourse._id).toBeDefined();
         expect(response.body.deletedCourse.name).toBeDefined();
         expect(response.body.deletedCourse.typeID).toBeDefined();
         expect(response.body.deletedCourse.universityID).toBeDefined();
-        expect(response.headers["content-type"]).toContain("json");
+        expect(response.headers['content-type']).toContain('json');
         expect(response.statusCode).toBe(200);
       });
     });
-    describe("given an Id with no valid resource related", () => {
-      it("should respond with a 404 status code and a json obj containing a message", async () => {
+    describe('given an Id with no valid resource related', () => {
+      it('should respond with a 404 status code and a json obj containing a message', async () => {
         const response = await request(app)
-          .delete(`/api/course/${modifiedCourseTestId}`)
+          .delete(`/api/courses/${modifiedCourseTestId}`)
           .send();
         expect(response.body.message).toBeDefined();
-        expect(response.headers["content-type"]).toContain("json");
+        expect(response.headers['content-type']).toContain('json');
         expect(response.statusCode).toBe(404);
       });
     });
   });
-  describe("GET requests", () => {
-    describe("get all courses", () => {
-      describe("if the course collection is empty", () => {
-        it("should respond with a 404 status code and a json obj containing a message", async () => {
-          const response = await request(app).get("/api/course/").send();
+  describe('GET requests', () => {
+    describe('get all courses', () => {
+      describe('if the course collection is empty', () => {
+        it('should respond with a 404 status code and a json obj containing a message', async () => {
+          const response = await request(app).get('/api/courses/').send();
           expect(response.body.message).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(404);
         });
       });
-      describe("if the course collection has resources available", () => {
+      describe('if the course collection has resources available', () => {
         beforeAll(async () => {
           courseTestId = await createDummyCourse(
             Course,
@@ -207,102 +207,102 @@ describe("course requests", () => {
             universityTestId
           );
         });
-        it("should send back a 200 status code and a json obj containing count and course properties", async () => {
-          const response = await request(app).get("/api/course/").send();
+        it('should send back a 200 status code and a json obj containing count and course properties', async () => {
+          const response = await request(app).get('/api/courses/').send();
           expect(response.body.count).toBeDefined();
           expect(response.body.course).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(200);
         });
       });
     });
-    describe("get single course", () => {
-      describe("given a valid Id", () => {
-        it("should respond with a 200 status code and a json obj containing the id ,name ,typeid and universityid ", async () => {
+    describe('get single course', () => {
+      describe('given a valid Id', () => {
+        it('should respond with a 200 status code and a json obj containing the id ,name ,typeid and universityid ', async () => {
           const response = await request(app)
-            .get(`/api/course/${courseTestId}`)
+            .get(`/api/courses/${courseTestId}`)
             .send();
           expect(response.body.course._id).toBeDefined();
           expect(response.body.course.name).toBeDefined();
           expect(response.body.course.typeID).toBeDefined();
           expect(response.body.course.universityID).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(200);
         });
       });
-      describe("given an Id with no valid resource related", () => {
-        it("should send back a 404 status code and json obj containing a message", async () => {
+      describe('given an Id with no valid resource related', () => {
+        it('should send back a 404 status code and json obj containing a message', async () => {
           const response = await request(app)
-            .get(`/api/course/${modifiedCourseTestId}`)
+            .get(`/api/courses/${modifiedCourseTestId}`)
             .send();
           expect(response.body.message).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(404);
         });
       });
     });
-    describe("get all courses of one university", () => {
-      describe("given a valid Id", () => {
-        it("should respond with a 200 status code and a json object containing count and course properties", async () => {
+    describe('get all courses of one university', () => {
+      describe('given a valid Id', () => {
+        it('should respond with a 200 status code and a json object containing count and course properties', async () => {
           const response = await request(app)
-            .get(`/api/course/peruniversity/${universityTestId}`)
+            .get(`/api/courses?univId=${universityTestId}`)
             .send();
           expect(response.body.count).toBeDefined();
           expect(response.body.course).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(200);
         });
       });
-      describe("given an Id with no valid resource related", () => {
-        it("should respond with a 404 code and a json obj with a message", async () => {
+      describe('given an Id with no valid resource related', () => {
+        it('should respond with a 404 code and a json obj with a message', async () => {
           const response = await request(app)
-            .get(`/api/course/peruniversity/${modifiedUniversityTestId}`)
+            .get(`/api/courses?univId=${modifiedUniversityTestId}`)
             .send();
           expect(response.body.message).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(404);
         });
       });
     });
-    describe("get all courses of one type", () => {
-      describe("given a valid Id", () => {
-        it("should respond with a 200 status code and a json obj containing count and course properties", async () => {
+    describe('get all courses of one type', () => {
+      describe('given a valid Id', () => {
+        it('should respond with a 200 status code and a json obj containing count and course properties', async () => {
           const response = await request(app)
-            .get(`/api/course/pertype/${courseTypeTestId}`)
+            .get(`/api/courses?typeId${courseTypeTestId}`)
             .send();
           expect(response.body.count).toBeDefined();
           expect(response.body.course).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(200);
         });
       });
-      describe("given an Id with no valid resources related", () => {
-        it("should respond with a 404 status code and a json obj containing count and course properties", async () => {
+      describe('given an Id with no valid resources related', () => {
+        it('should respond with a 404 status code and a json obj containing count and course properties', async () => {
           const response = await request(app)
-            .get(`/api/course/pertype/${modifiedCourseTypeTestId}`)
+            .get(`/api/courses?typeId=${modifiedCourseTypeTestId}`)
             .send();
           expect(response.body.message).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(404);
         });
       });
     });
-    describe("get all course of one type in a university", () => {
-      describe("given valid Ids", () => {
-        it("should respond with a 200 status code and a json obj containing count and course properties", async () => {
+    describe('get all course of one type in a university', () => {
+      describe('given valid Ids', () => {
+        it('should respond with a 200 status code and a json obj containing count and course properties', async () => {
           const response = await request(app)
             .get(
-              `/api/course/pertypeanduniversity/${courseTypeTestId}/${universityTestId}`
+              `/api/courses?typeId=${courseTypeTestId}&univId=${universityTestId}`
             )
             .send();
           expect(response.body.count).toBeDefined();
           expect(response.body.course).toBeDefined();
-          expect(response.headers["content-type"]).toContain("json");
+          expect(response.headers['content-type']).toContain('json');
           expect(response.statusCode).toBe(200);
         });
       });
-      describe("given Ids with no valid resources related", () => {
-        it("should respond with a 404 status code and json obj containing a message", async () => {
+      describe('given Ids with no valid resources related', () => {
+        it('should respond with a 404 status code and json obj containing a message', async () => {
           idPairs = [
             {
               type: courseTypeTestId,
@@ -316,13 +316,11 @@ describe("course requests", () => {
           ];
           for (let ids of idPairs) {
             const response = await request(app)
-              .get(
-                `/api/course/pertypeanduniversity/${ids.type}/${ids.university}`
-              )
+              .get(`/api/courses?typeId=${ids.type}&univId=${ids.university}`)
               .send();
             expect(response.statusCode).toBe(404);
             expect(response.body.message).toBeDefined();
-            expect(response.headers["content-type"]).toContain("json");
+            expect(response.headers['content-type']).toContain('json');
           }
         });
       });
